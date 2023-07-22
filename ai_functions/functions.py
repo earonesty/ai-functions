@@ -19,7 +19,7 @@ def convert_response(ret):
     # convert content to be a string, for sure
     try:
         content = ret if isinstance(ret, str) else json.dumps(ret)
-    except TypeError as e:
+    except TypeError:
         content = str(ret)
     return content
 
@@ -139,7 +139,7 @@ def execute_function(funcs: Iterable[Callable], name: str, arguments: Union[str,
     return convert_output(ret) if convert_output else ret
 
 
-async def async_execute_function(funcs: Iterable[Callable], name: str, arguments: str, convert_output=convert_response):
+async def async_execute_function(funcs: Iterable[Callable], name: str, arguments: str, convert_output=convert_response, **kws):
     args, func = prepare_function(arguments, funcs, name, **kws)
     ret = await func(**{**args, **kws})
     return convert_output(ret) if convert_output else ret
