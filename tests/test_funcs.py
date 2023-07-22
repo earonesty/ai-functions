@@ -120,6 +120,7 @@ def test_openai_dict(ai_functions):
                     "x": {"type": "number", "description": "x val"}
                 },
             },
+            "required": ["x"]
         },
         {
             "name": "example_func2",
@@ -131,6 +132,7 @@ def test_openai_dict(ai_functions):
                     "y": {"type": "string", "description": "y val"},
                 },
             },
+            "required": ["x", "y"]
         },
     ]
 

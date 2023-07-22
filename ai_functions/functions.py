@@ -85,24 +85,25 @@ class AIFunctions:
 
 def get_openai_args(sig):
     annotated_args: dict[str, dict[str, str]] = {}
+    required: list[str] = []
     for param_index, (param_name, param) in enumerate(sig.parameters.items()):
         if param_name in ("self", "cls") and param_index == 0:
             continue
         if param.kind == param.POSITIONAL_ONLY:
             return None
-        if param.annotation == inspect.Parameter.empty or param.annotation == Any:
-            if param.kind != param.VAR_KEYWORD:
-                return None
+        if param.annotation == inspect.Parameter.empty:
             continue
         if get_origin(param.annotation) is not Annotated:
-            return None
+            continue
         base_type = get_args(param.annotation)[0]
-        param_type = JSON_TYPE_MAP[base_type]
         param_description = param.annotation.__metadata__[0]
         if param_description is None:
             continue
+        if param.default == inspect.Parameter.empty:
+            required.append(param_name) 
+        param_type = JSON_TYPE_MAP[base_type]
         annotated_args[param_name] = {"type": param_type, "description": param_description}
-    return annotated_args
+    return annotated_args, required
 
 
 def get_openai_dict(funcs: Iterable[Callable] = None):
@@ -111,12 +112,12 @@ def get_openai_dict(funcs: Iterable[Callable] = None):
         name = func.__name__
         docs = inspect.getdoc(func)
         sig = inspect.signature(func)
-        args = get_openai_args(sig)
+        args, required = get_openai_args(sig)
 
         if args is None or docs is None:
             raise ValueError(f"Invalid function {name}, must have annotated docs and arguments")
 
-        ret.append(dict(
+        d = dict(
             name=name,
             description=docs,
             parameters=dict(
@@ -125,7 +126,10 @@ def get_openai_dict(funcs: Iterable[Callable] = None):
                     **args
                 ),
             )
-        ))
+        )
+        if required:
+            d["required"] = required
+        ret.append(d)
 
     return ret
 
