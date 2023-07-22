@@ -91,7 +91,9 @@ def get_openai_args(sig):
         if param.kind == param.POSITIONAL_ONLY:
             return None
         if param.annotation == inspect.Parameter.empty or param.annotation == Any:
-            return None
+            if param.kind != param.VAR_KEYWORD:
+                return None
+            continue
         if get_origin(param.annotation) is not Annotated:
             return None
         base_type = get_args(param.annotation)[0]

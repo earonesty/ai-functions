@@ -36,7 +36,7 @@ async def async_example_func1(x: Annotated[int, "x val"]):
     return x + 1
 
 # Example ctx, None annotation means "supplied by framework"
-def example_ctx(x: Annotated[int, "x val"], ctx: Annotated[str, None]):
+def example_ctx(x: Annotated[int, "x val"], ctx: Annotated[str, None], **kws):
     """Adds 1 to x + ctx."""
     return x + 1 + int(ctx)
 
