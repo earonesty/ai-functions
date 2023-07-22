@@ -44,25 +44,25 @@ class AIFunctions:
             funcs = self.map.values()
         return get_openai_dict(funcs)
 
-    def execute(self, name: str, args: Union[str, dict], *, loop=None):
+    def execute(self, name: str, args: Union[str, dict], *, loop=None, **kws):
         """Run a named function"""
         return execute_function([self.map[name]], name, args, loop=loop or self.loop,
-                                convert_output=self.convert_output)
+                                convert_output=self.convert_output, **kws)
 
-    def openai_execute(self, call: dict, *, loop=None):
+    def openai_execute(self, call: dict, *, loop=None, **kws):
         """Run an openai style function_call"""
         name, args = call["name"], call["arguments"]
         return execute_function([self.map[name]], name, args, loop=loop or self.loop,
-                                convert_output=self.convert_output)
+                                convert_output=self.convert_output, **kws)
 
-    async def async_execute(self, name, args):
+    async def async_execute(self, name, args, **kws):
         """Async run a named function"""
-        return async_execute_function([self.map[name]], name, args, convert_output=self.convert_output)
+        return async_execute_function([self.map[name]], name, args, convert_output=self.convert_output, **kws)
 
-    async def async_openai_execute(self, call):
+    async def async_openai_execute(self, call, **kws):
         """Async run an openai style function"""
         name, args = call["name"], call["arguments"]
-        return async_execute_function([self.map[name]], name, args, convert_output=self.convert_output)
+        return async_execute_function([self.map[name]], name, args, convert_output=self.convert_output, **kws)
 
     def __contains__(self, func):
         name = func if isinstance(func, str) else  func.__name__
@@ -97,6 +97,8 @@ def get_openai_args(sig):
         base_type = get_args(param.annotation)[0]
         param_type = JSON_TYPE_MAP[base_type]
         param_description = param.annotation.__metadata__[0]
+        if param_description is None:
+            continue
         annotated_args[param_name] = {"type": param_type, "description": param_description}
     return annotated_args
 
@@ -127,9 +129,9 @@ def get_openai_dict(funcs: Iterable[Callable] = None):
 
 
 def execute_function(funcs: Iterable[Callable], name: str, arguments: Union[str, dict], *, loop=None,
-                     convert_output=convert_response):
+                     convert_output=convert_response, **kws):
     args, func = prepare_function(arguments, funcs, name)
-    ret = func(**args)
+    ret = func(**{**args, **kws})
     while inspect.iscoroutine(ret):
         if not loop:
             raise ValueError(f"Function {name} cannot be run, because we need a loop for async functions")
@@ -138,8 +140,8 @@ def execute_function(funcs: Iterable[Callable], name: str, arguments: Union[str,
 
 
 async def async_execute_function(funcs: Iterable[Callable], name: str, arguments: str, convert_output=convert_response):
-    args, func = prepare_function(arguments, funcs, name)
-    ret = await func(**args)
+    args, func = prepare_function(arguments, funcs, name, **kws)
+    ret = await func(**{**args, **kws})
     return convert_output(ret) if convert_output else ret
 
 

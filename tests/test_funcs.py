@@ -35,6 +35,11 @@ async def async_example_func1(x: Annotated[int, "x val"]):
     """Adds 1 to x."""
     return x + 1
 
+# Example ctx, None annotation means "supplied by framework"
+def example_ctx(x: Annotated[int, "x val"], ctx: Annotated[str, None]):
+    """Adds 1 to x + ctx."""
+    return x + 1 + int(ctx)
+
 
 def bad_func(x: int):
     return x + 1
@@ -56,6 +61,11 @@ def test_execute_function(ai_functions):
     # Test regular execution of a synchronous function
     result = ai_functions.execute("example_func1", json.dumps(dict(x=5)))
     assert result == "6"
+
+def test_execute_function_kw(ai_functions):
+    ai_functions.add(example_ctx)
+    result = ai_functions.execute("example_ctx", json.dumps(dict(x=5)), ctx="1")
+    assert result == "7"
 
 
 def test_execute_function_no_convert(ai_functions):
