@@ -4,6 +4,12 @@
 Simple library that can convert from python functions to a JSON schema description of those functions, suitable for use with AI libraries.
 
 
+## Installation
+
+`pip install ai-functions`
+
+## Usage
+
 For example:
 
 ```
@@ -44,13 +50,13 @@ container.opeanai_execute({"name": "search_web", "arguments": "{\"query\":\"top 
 
 ```
 
+## What stuff does this handle?
 
-It handles converting arguments to JSON if they are specified as a string.
+ - Converts your annotated schema into an appropriate prompt 
+ - Handles converting arguments to JSON if they are specified as a string.
+ - Auto-casts arguments to the right types, if they aren't right.
+ - Raises errors that AI engines understand if returned as a function response, instead of errors with poor descriptions.
 
-It auto-casts arguments to the right types, if they aren't right.
-
-It returns errors that AI engines understands, instead of errors with poor descriptions.
-
-If a loop is provided to the AIFunctions constructor, or to any execute calls, it will be used to schedule a coroutine.
-
-Async versions of execute are available, prefix all calls with `async_`
+## Async execute
+ - If a loop is provided to the AIFunctions constructor, or to any execute calls, it will be used to schedule a coroutine.
+ - Async versions of execute are available, prefix all calls with `async_`
