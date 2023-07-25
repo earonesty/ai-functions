@@ -49,8 +49,19 @@ container.execute("search_web", {"query":"top web hosting sites"})
 container.opeanai_execute({"name": "search_web", "arguments": "{\"query\":\"top web hosting sites\"}")
 
 ```
+## What stuff does this handle?
 
-# The fine print
+ - Converts your annotated schema into an appropriate prompt 
+ - Handles converting arguments to JSON if they are specified as a string.
+ - Auto-casts arguments to the right types, if they aren't right.
+ - Raises errors that AI engines understand if returned as a function response, instead of errors with poor descriptions.
+
+## Async execute
+ - If a loop is provided to the AIFunctions constructor, or to any execute calls, it will be used to schedule a coroutine.
+ - Async versions of execute are available, prefix all calls with `async_`
+
+
+### Some fine print
 
 If you want to have a paramter that is still seen as "valid", but isn't part of the schema, you can 
 annotate it with None as the description.  But this is really an "enforcement" thing, and might not
@@ -63,13 +74,3 @@ For example, I use create meta-functions that unlock others, to prevent context-
 Might put that in another lib soon, or put it here.
 
 
-## What stuff does this handle?
-
- - Converts your annotated schema into an appropriate prompt 
- - Handles converting arguments to JSON if they are specified as a string.
- - Auto-casts arguments to the right types, if they aren't right.
- - Raises errors that AI engines understand if returned as a function response, instead of errors with poor descriptions.
-
-## Async execute
- - If a loop is provided to the AIFunctions constructor, or to any execute calls, it will be used to schedule a coroutine.
- - Async versions of execute are available, prefix all calls with `async_`
