@@ -50,6 +50,19 @@ container.opeanai_execute({"name": "search_web", "arguments": "{\"query\":\"top 
 
 ```
 
+# The fine print
+
+If you want to have a paramter that is still seen as "valid", but isn't part of the schema, you can 
+annotate it with None as the description.  But this is really an "enforcement" thing, and might not
+belong in this library.
+
+Dealing with context is a beast in chat apps, so more work here might be helpful.
+
+For example, I use create meta-functions that unlock others, to prevent context-bloat.
+
+Might put that in another lib soon, or put it here.
+
+
 ## What stuff does this handle?
 
  - Converts your annotated schema into an appropriate prompt 
