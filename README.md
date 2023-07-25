@@ -69,7 +69,7 @@ belong in this library.
 
 Dealing with context is a beast in chat apps, so more work here might be helpful.
 
-For example, I use create meta-functions that unlock others, to prevent context-bloat.
+For example, I use meta-functions that unlock others, to prevent context-bloat.  
 
 Might put that in another lib soon, or put it here.
 
