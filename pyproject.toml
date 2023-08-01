@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ai-functions"
-version = "0.4.2"
+version = "0.4.3"
 description = "manage openai functions and execution"
 authors = ["erik aronesty <erik@q32.com>"]
 license = "MIT"

@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import json
+import typing
 from typing import get_origin, Annotated, get_args, Callable, Iterable, Union
 import logging
 
@@ -11,7 +12,8 @@ JSON_TYPE_MAP = {
     int: "number",
     bool: "boolean",
     float: "number",
-    list: "array"
+    list: "array",
+    dict: "object"
 }
 
 
@@ -103,8 +105,13 @@ def get_openai_args(sig):
         if param_description is None:
             continue
         if param.default == inspect.Parameter.empty:
-            required.append(param_name) 
+            required.append(param_name)
+
+        type_args = typing.get_args(base_type)
+        if type_args:
+            base_type = typing.get_origin(base_type)
         param_type = JSON_TYPE_MAP[base_type]
+
         annotated_args[param_name] = {"type": param_type, "description": param_description}
     return annotated_args, required
 
