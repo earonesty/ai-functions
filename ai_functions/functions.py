@@ -1,7 +1,7 @@
 import asyncio
 import inspect
 import json
-from typing import get_origin, Any, Annotated, get_args, Callable, Iterable, Union
+from typing import get_origin, Annotated, get_args, Callable, Iterable, Union
 import logging
 
 log = logging.getLogger(__name__)
@@ -30,6 +30,9 @@ class AIFunctions:
         self.loop = loop
         self.validate()
         self.convert_output = convert_output
+
+    def clone(self):
+        return AIFunctions(self.map.values(), loop=self.loop, convert_output=self.convert_output)
 
     def validate(self):
         """Check that all functions have appropriate annotations."""
@@ -128,7 +131,7 @@ def get_openai_dict(funcs: Iterable[Callable] = None):
             )
         )
         if required:
-            d["required"] = required
+            d["parameters"]["required"] = required
         ret.append(d)
 
     return ret

@@ -119,8 +119,8 @@ def test_openai_dict(ai_functions):
                 "properties": {
                     "x": {"type": "number", "description": "x val"}
                 },
+                "required": ["x"]
             },
-            "required": ["x"]
         },
         {
             "name": "example_func2",
@@ -131,8 +131,8 @@ def test_openai_dict(ai_functions):
                     "x": {"type": "number", "description": "x val"},
                     "y": {"type": "string", "description": "y val"},
                 },
+                "required": ["x", "y"]
             },
-            "required": ["x", "y"]
         },
     ]
 
@@ -142,6 +142,18 @@ def test_openai_execute(ai_functions):
     call = {"name": "example_func2", "arguments": {"x": 2, "y": "4"}}
     result = ai_functions.openai_execute(call)
     assert result == "6"
+
+
+def test_clone(ai_functions):
+    # Test execution of a function using the openai style function_call
+    ai_functions.loop = 1
+    ai_functions.convert_output = lambda res: json.dumps(res)
+    clone = ai_functions.clone()
+    call = {"name": "example_func2", "arguments": {"x": 2, "y": "4"}}
+    result = clone.openai_execute(call)
+    assert result == "6"
+    assert clone.convert_output == ai_functions.convert_output
+    assert clone.loop == ai_functions.loop
 
 
 def test_description(ai_functions):
