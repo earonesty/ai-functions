@@ -2,7 +2,7 @@ import asyncio
 import inspect
 import json
 import typing
-from typing import get_origin, Annotated, get_args, Callable, Iterable, Union
+from typing import Optional, get_origin, Annotated, get_args, Callable, Iterable, Union
 import logging
 
 log = logging.getLogger(__name__)
@@ -27,7 +27,8 @@ def convert_response(ret):
 
 
 class AIFunctions:
-    def __init__(self, funcs=[], *, loop=None, convert_output=convert_response):
+    def __init__(self, funcs=None, *, loop=None, convert_output=convert_response):
+        funcs = [] if funcs is None else funcs
         self.map = dict({f.__name__: f for f in funcs})
         self.loop = loop
         self.validate()
@@ -40,8 +41,9 @@ class AIFunctions:
         """Check that all functions have appropriate annotations."""
         get_openai_dict(self.map.values())
 
-    def openai_dict(self, funcs: Iterable[Union[str, Callable]] = []):
+    def openai_dict(self, funcs: Optional[Iterable[Union[str, Callable]]] = None):
         """Make an openai compatible function dict"""
+        funcs = [] if funcs is None else funcs
         if funcs:
             names = [f if isinstance(f, str) else f.__name__ for f in funcs]
             funcs = [v for k, v in self.map.items() if k in names]
