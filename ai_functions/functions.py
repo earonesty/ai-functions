@@ -43,8 +43,7 @@ class AIFunctions:
 
     def openai_dict(self, funcs: Optional[Iterable[Union[str, Callable]]] = None):
         """Make an openai compatible function dict"""
-        funcs = [] if funcs is None else funcs
-        if funcs:
+        if funcs := [] if funcs is None else funcs:
             names = [f if isinstance(f, str) else f.__name__ for f in funcs]
             funcs = [v for k, v in self.map.items() if k in names]
         else:
@@ -103,14 +102,12 @@ def get_openai_args(sig):
         if get_origin(param.annotation) is not Annotated:
             continue
         base_type = get_args(param.annotation)[0]
-        param_description = param.annotation.__metadata__[0]
-        if param_description is None:
+        if (param_description := param.annotation.__metadata__[0]) is None:
             continue
         if param.default == inspect.Parameter.empty:
             required.append(param_name)
 
-        type_args = typing.get_args(base_type)
-        if type_args:
+        if type_args := typing.get_args(base_type):
             base_type = typing.get_origin(base_type)
         param_type = JSON_TYPE_MAP[base_type]
 
